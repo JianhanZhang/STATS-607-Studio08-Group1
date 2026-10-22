@@ -13,11 +13,11 @@ class RegressionDGP(ABC):
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
 
-    def __init__(self, n, r, gamma):
+    def __init__(self, n, r2, gamma):
         self.n, self.gamma = n, gamma
         self.p = int(self.gamma * self.n)
         self.covariance = np.eye(self.p)
-        self.beta = np.ones(self.p) * np.sqrt(r**2 / self.p)
+        self.beta = np.ones(self.p) * np.sqrt(r2 / self.p)
 
     @abstractmethod
     def errors(self, rng):
