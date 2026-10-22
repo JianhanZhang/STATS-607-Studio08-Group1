@@ -13,19 +13,18 @@ class RegressionDGP(ABC):
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
 
-    def __init__(self, n, p, rho):
-        self.n, self.p, self.rho = n, p, rho
-        index = np.arange(p)
-        self.covariance = rho ** np.abs(index[:, None] - index[None, :])
-        self.beta = np.ones(p) / np.sqrt(p)
-        self.factor = np.linalg.cholesky(self.covariance)
+    def __init__(self, n, r, gamma):
+        self.n, self.gamma = n, gamma
+        self.p = int(self.gamma * self.n)
+        self.covariance = np.eye(self.p)
+        self.beta = np.ones(self.p) * np.sqrt(r**2 / self.p)
 
     @abstractmethod
     def errors(self, rng):
         """Return n independent errors with mean zero and variance one."""
 
     def generate(self, rng):
-        X = rng.normal(size=(self.n, self.p)) @ self.factor.T
+        X = rng.normal(size=(self.n, self.p)) #@ self.factor.T
         return {"X": X, "y": X @ self.beta + self.errors(rng),
                 "beta_true": self.beta, "covariance": self.covariance}
 
@@ -35,9 +34,9 @@ class NormalDGP(RegressionDGP):
         return rng.normal(size=self.n)
 
 
-class LaplaceDGP(RegressionDGP):
+'''class LaplaceDGP(RegressionDGP):
     def errors(self, rng):
-        return rng.laplace(scale=1 / np.sqrt(2), size=self.n)
+        return rng.laplace(scale=1 / np.sqrt(2), size=self.n)'''
 
 
-DGP_CLASSES = {"normal": NormalDGP, "laplace": LaplaceDGP}
+# DGP_CLASSES = {"normal": NormalDGP, "laplace": LaplaceDGP}
