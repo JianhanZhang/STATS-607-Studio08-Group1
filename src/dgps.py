@@ -13,8 +13,8 @@ class RegressionDGP(ABC):
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
 
-    def __init__(self, n, r2, p, gamma):
-        self.n, self.gamma = n, gamma
+    def __init__(self, n, r2, p):
+        self.n = n
         self.p = p
         self.covariance = np.eye(self.p)
         self.beta = np.ones(self.p) * np.sqrt(r2 / self.p)
@@ -34,9 +34,9 @@ class NormalDGP(RegressionDGP):
         return rng.normal(size=self.n)
 
 
-'''class LaplaceDGP(RegressionDGP):
+class LaplaceDGP(RegressionDGP):
     def errors(self, rng):
-        return rng.laplace(scale=1 / np.sqrt(2), size=self.n)'''
+        return rng.laplace(scale=1 / np.sqrt(2), size=self.n)
 
 
-# DGP_CLASSES = {"normal": NormalDGP, "laplace": LaplaceDGP}
+DGP_CLASSES = {"normal": NormalDGP, "laplace": LaplaceDGP}

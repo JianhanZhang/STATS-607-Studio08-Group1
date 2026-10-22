@@ -1,5 +1,7 @@
 """Specify the simulation design in one place."""
 
+import numpy as np
+
 
 def make_scenarios():
     """Return {scenario_id: settings} for experiments A and B.
@@ -15,14 +17,24 @@ def make_scenarios():
     """
     scenarios = {}
     n = 200
-    for distribution in ["normal", "laplace"]:
-        for gamma in [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    for distribution in ["normal"]:
+        for i, gamma in enumerate(np.logspace(-1, 1, 5000)):
             p = round(n * gamma)
-            scenarios[f"A_{distribution}_p{p:03d}"] = {
-                "experiment": "A", "n": n, "p": p, "rho": 0.0,
+            scenarios[f"nsim{1}_case{i:04d}"] = {
+                "nsim": 1, "n": n, "p": p, "gamma": gamma, 
                 "error_distribution": distribution}
-    for rho in [0.0, 0.5, 0.8, 0.9, 0.95, 0.99]:
+        for i, gamma in enumerate(np.logspace(-1, 1, 100)):
+            p = round(n * gamma)
+            scenarios[f"nsim{50}_case{i:04d}"] = {
+                "nsim": 50, "n": n, "p": p, "gamma": gamma, 
+                "error_distribution": distribution}
+        for i, gamma in enumerate(np.array([0.2, 0.5, 0.8, 2, 5])):
+            p = round(n * gamma)
+            scenarios[f"nsim{1000}_case{i:04d}"] = {
+                "nsim": 1000, "n": n, "p": p, "gamma": gamma, 
+                "error_distribution": distribution}
+    '''for rho in [0.0, 0.5, 0.8, 0.9, 0.95, 0.99]:
         scenarios[f"B_rho{round(100 * rho):02d}"] = {
             "experiment": "B", "n": n, "p": 100, "rho": rho,
-            "error_distribution": "normal"}
+            "error_distribution": "normal"}'''
     return scenarios
