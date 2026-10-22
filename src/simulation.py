@@ -159,3 +159,55 @@ class SimulationStudy:
         save_csv(design, self.out_dir / "design.csv")
         save_json(metadata, self.out_dir / "metadata.json")
         return results
+
+
+STUDIO08_RESULT_COLUMNS = ["n_sim", "gamma", "MSE", "se"]
+
+
+def simulate_ridgeless_ols(scenarios, generate_data=None, seed=20261015,
+                           dgp_classes=None, r2=5.0):
+    """Simulate coefficient risk for Studio 08 and return Person 3's schema.
+
+    Scenarios contain ``n``, ``p``, ``gamma``, and ``nsim`` (or ``n_sim``).
+    Supply either ``generate_data(n, p, rng)`` returning a tuple or
+    ``dgp_classes`` mapping error names to DGP classes with ``generate(rng)``.
+    """
+    if (generate_data is None) == (dgp_classes is None):
+        raise ValueError("Provide exactly one of generate_data or dgp_classes")
+
+    rows = []
+    for scenario_id, settings in scenarios.items():
+        n, p = int(settings["n"]), int(settings["p"])
+        n_sim = int(settings.get("n_sim", settings.get("nsim", 0)))
+        gamma = float(settings.get("gamma", p / n))
+        if n <= 0 or p <= 0 or n_sim <= 0:
+            raise ValueError(f"{scenario_id}: n, p, and n_sim must be positive")
+
+        scenario_dgp = None
+        if dgp_classes is not None:
+            dgp_class = dgp_classes[settings["error_distribution"]]
+            scenario_dgp = dgp_class(n, r2, p)
+
+        squared_errors = np.empty(n_sim, dtype=float)
+        for rep in range(n_sim):
+            rng = rng_for(seed, scenario_id, rep, "data")
+            if generate_data is not None:
+                X, y, beta_true = generate_data(n, p, rng)
+            elif scenario_dgp is not None:
+                data = scenario_dgp.generate(rng)
+                X, y, beta_true = data["X"], data["y"], data["beta_true"]
+            else:
+                raise RuntimeError("No data generator is configured")
+            beta_hat = np.linalg.lstsq(X, y, rcond=None)[0]
+            difference = beta_hat - np.asarray(beta_true)
+            squared_errors[rep] = difference @ difference
+
+        rows.append({
+            "n_sim": n_sim,
+            "gamma": gamma,
+            "MSE": float(squared_errors.mean()),
+            "se": (float(squared_errors.std(ddof=1) / np.sqrt(n_sim))
+                   if n_sim > 1 else np.nan),
+        })
+
+    return pd.DataFrame(rows, columns=STUDIO08_RESULT_COLUMNS)
