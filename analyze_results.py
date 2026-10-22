@@ -21,7 +21,6 @@ R2 = 5.0
 
 
 def add_theory(ax) -> None:
-    # Separate curves because the theoretical risk diverges at gamma=1.
     left = np.geomspace(0.1, 0.99, 400)
     right = np.geomspace(1.01, 10.0, 400)
     ax.plot(left, left / (1.0 - left), color="black", lw=1.6, label="Theory")
