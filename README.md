@@ -1,4 +1,4 @@
-# Studio 07: completed simulation and analysis
+# Studio 08: Benign Overfitting
 
 **Team Members:** Taesung Ha, Qingyuan Yu, Jianhan Zhang
 
