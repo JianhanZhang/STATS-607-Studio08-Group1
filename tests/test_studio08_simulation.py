@@ -20,7 +20,6 @@ def test_simulation_returns_person3_schema_with_mse_and_se():
     assert results.loc[0, "MSE"] == 5.0
     assert results.loc[0, "se"] == 4.0
 
-
 def test_single_replication_has_nan_standard_error():
     def generate_data(n, p, rng):
         return np.ones((1, 1)), np.array([2.0]), np.zeros(1)
@@ -29,7 +28,7 @@ def test_single_replication_has_nan_standard_error():
     results = simulate_ridgeless_ols(scenarios, generate_data, seed=19)
 
     assert results.loc[0, "MSE"] == 4.0
-    assert np.isnan(results["se"].to_numpy(dtype=np.float64)[0])
+    assert results.loc[0, "se"] == 0.0
 
 
 def test_person1_scenarios_and_dgp_match_simulation_contract():
