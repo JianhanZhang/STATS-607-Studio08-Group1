@@ -11,7 +11,7 @@ from src.simulation import simulate_ridgeless_ols
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, default=20261015)
-    parser.add_argument("--output", type=Path, default=Path("simulation_results.pkl"))
+    parser.add_argument("--output", type=Path, default=Path("results/raw/simulation_results.pkl"))
     parser.add_argument("--expected-fits", type=int, default=15000)
     args = parser.parse_args()
 

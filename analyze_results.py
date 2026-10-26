@@ -55,8 +55,8 @@ def plot_data(ax, frame: pd.DataFrame, n_sim: int) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=Path, default=Path("simulation_results.pkl"))
-    parser.add_argument("--output", type=Path, default=Path("figure.pdf"))
+    parser.add_argument("--input", type=Path, default=Path("results/raw/simulation_results.pkl"))
+    parser.add_argument("--output", type=Path, default=Path("results/figures/figure.pdf"))
     args = parser.parse_args()
 
     df = pd.read_pickle(args.input)
