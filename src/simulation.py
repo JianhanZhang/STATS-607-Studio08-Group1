@@ -207,7 +207,7 @@ def simulate_ridgeless_ols(scenarios, generate_data=None, seed=20261015,
             "gamma": gamma,
             "MSE": float(squared_errors.mean()),
             "se": (float(squared_errors.std(ddof=1) / np.sqrt(n_sim))
-                   if n_sim > 1 else np.nan),
+                   if n_sim > 1 else 0.0),
         })
 
     return pd.DataFrame(rows, columns=STUDIO08_RESULT_COLUMNS)
